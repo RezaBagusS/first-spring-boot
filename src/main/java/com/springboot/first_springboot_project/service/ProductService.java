@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.springboot.first_springboot_project.dto.response.ProductResponse;
 import com.springboot.first_springboot_project.entity.Product;
+import com.springboot.first_springboot_project.exception.NotFoundException;
 
 @Service
 public class ProductService {
@@ -17,6 +18,14 @@ public class ProductService {
         return products.stream()
                 .map(product -> new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getStock()))
                 .toList();
+    }
+
+    public ProductResponse getProductById(Long id){
+        Product product = products.stream()
+                .filter(item -> item.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Product dengan ID " + id + " tidak ditemukan"));
+        return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getStock());
     }
 
 }

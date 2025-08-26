@@ -3,7 +3,7 @@ package com.springboot.first_springboot_project.service;
 import com.springboot.first_springboot_project.dto.request.TaskRequest;
 import com.springboot.first_springboot_project.dto.response.TaskResponse;
 import com.springboot.first_springboot_project.entity.Task;
-import com.springboot.first_springboot_project.exception.TaskNotFoundException;
+import com.springboot.first_springboot_project.exception.NotFoundException;
 
 import org.springframework.stereotype.Service;
 
@@ -26,7 +26,7 @@ public class TaskService {
         Task task = tasks.stream()
                 .filter(t -> t.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new TaskNotFoundException("Task dengan ID " + id + " tidak ditemukan"));
+                .orElseThrow(() -> new NotFoundException("Task dengan ID " + id + " tidak ditemukan"));
         return new TaskResponse(task.getId(), task.getTitle(), task.isCompleted());
     }
 
@@ -40,7 +40,7 @@ public class TaskService {
         Task task = tasks.stream()
                 .filter(t -> t.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new TaskNotFoundException("Task dengan ID " + id + " tidak ditemukan"));
+                .orElseThrow(() -> new NotFoundException("Task dengan ID " + id + " tidak ditemukan"));
         task.setTitle(request.title());
         return new TaskResponse(task.getId(), task.getTitle(), task.isCompleted());
     }
@@ -48,7 +48,7 @@ public class TaskService {
     public void deleteTask(Long id) {
         boolean removed = tasks.removeIf(t -> t.getId().equals(id));
         if (!removed) {
-            throw new TaskNotFoundException("Task dengan ID " + id + " tidak ditemukan");
+            throw new NotFoundException("Task dengan ID " + id + " tidak ditemukan");
         }
     }
 }
