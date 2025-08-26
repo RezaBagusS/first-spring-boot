@@ -32,7 +32,12 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<TaskResponse>> addTask(@Valid @RequestBody TaskRequest request) {
+    // public ResponseEntity<ApiResponse<TaskResponse>> addTask(@Valid @RequestBody TaskRequest request) {
+    //     TaskResponse createdTask = taskService.addTask(request);
+    //     return ResponseEntity.status(HttpStatus.CREATED)
+    //             .body(new ApiResponse<>("success", "Task berhasil ditambahkan", createdTask));
+    // }
+    public ResponseEntity<ApiResponse<TaskResponse>> addTask(@RequestBody TaskRequest request) {
         TaskResponse createdTask = taskService.addTask(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>("success", "Task berhasil ditambahkan", createdTask));
