@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.springboot.first_springboot_project.dto.request.ProductRequest;
 import com.springboot.first_springboot_project.dto.response.ProductResponse;
 import com.springboot.first_springboot_project.entity.Product;
 import com.springboot.first_springboot_project.exception.NotFoundException;
@@ -13,6 +14,7 @@ import com.springboot.first_springboot_project.exception.NotFoundException;
 public class ProductService {
     
     private final List<Product> products = new ArrayList<>();
+    private Long nextId = 1L;
 
     public List<ProductResponse> getAllProducts(){
         return products.stream()
@@ -28,4 +30,9 @@ public class ProductService {
         return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getStock());
     }
 
+    public ProductResponse addProduct(ProductRequest productRequest){
+        Product product = new Product(nextId++, productRequest.name(), productRequest.price(), 0);
+        products.add(product);
+        return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getStock());
+    }
 }
