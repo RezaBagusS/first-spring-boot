@@ -85,4 +85,12 @@ public class ProductService {
 
         return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getStock());
     }
+
+    public void deleteProduct(Long id){
+        boolean removed = products.removeIf(item -> item.getId().equals(id));
+
+        if (!removed) {
+            throw new NotFoundException("Data Product dengan ID " + id + " tidak ditemukan");
+        }
+    }
 }
