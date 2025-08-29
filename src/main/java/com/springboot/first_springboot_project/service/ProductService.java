@@ -1,23 +1,22 @@
 package com.springboot.first_springboot_project.service;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.first_springboot_project.dto.request.ProductRequest;
 import com.springboot.first_springboot_project.dto.response.ProductResponse;
 import com.springboot.first_springboot_project.entity.Product;
-// import com.springboot.first_springboot_project.exception.NotFoundException;
+import com.springboot.first_springboot_project.exception.NotFoundException;
 import com.springboot.first_springboot_project.repository.ProductRepository;
 
 @Service
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final List<Product> products = new ArrayList<>();
-    // private Long nextId = 1L;
 
     // Constructor Injection
     public ProductService(ProductRepository productRepository) {
@@ -26,38 +25,34 @@ public class ProductService {
     }
 
     private Product findProductById(UUID id) {
-        // .stream()
-        //         .filter(item -> item.getId().equals(id))
-        //         .findFirst()
-        // orElseThrow(() -> new NotFoundException("Data Product tidak ditemukan untuk ID " + id));
         return productRepository.findById(id).get();
     }
 
-    // private void updateNameIfPresent(Product product, String name) {
-    //     if (name != null) {
-    //         product.setName(name);
-    //     }
-    // }
+    private void updateNameIfPresent(Product product, String name) {
+        if (name != null) {
+            product.setName(name);
+        }
+    }
 
-    // private void updatePriceIfPresent(Product product, Double price) {
-    //     if (price != null) {
-    //         validateNonNegative(price, "Price");
-    //         product.setPrice(price);
-    //     }
-    // }
+    private void updatePriceIfPresent(Product product, BigDecimal price) {
+        if (price != null) {
+            validateNonNegative(price, "Price");
+            product.setPrice(price);
+        }
+    }
 
-    // private void updateStockIfPresent(Product product, Integer stock) {
-    //     if (stock != null) {
-    //         validateNonNegative(stock, "Stock");
-    //         product.setStock(stock);
-    //     }
-    // }
+    private void updateStockIfPresent(Product product, Integer stock) {
+        if (stock != null) {
+            validateNonNegative(stock, "Stock");
+            product.setStock(stock);
+        }
+    }
 
-    // private void validateNonNegative(Number value, String fieldName) {
-    //     if (value.doubleValue() < 0) {
-    //         throw new IllegalArgumentException(fieldName + " harus lebih dari atau sama dengan 0");
-    //     }
-    // }
+    private void validateNonNegative(Number value, String fieldName) {
+        if (value.doubleValue() < 0) {
+            throw new IllegalArgumentException(fieldName + " harus lebih dari atau sama dengan 0");
+        }
+    }
 
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll().stream()
@@ -79,25 +74,32 @@ public class ProductService {
 
         Product product = new Product(productRequest.name(), productRequest.price(), 0);
         productRepository.save(product);
-        products.add(product);
         return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getStock());
     }
 
-    // public ProductResponse updateProduct(Long id, ProductRequest productRequest) {
-    //     Product product = findProductById(id);
+    @Transactional
+    public ProductResponse updateProduct(UUID id, ProductRequest productRequest) {
+        Product product = findProductById(id);
 
-    //     updateNameIfPresent(product, productRequest.name());
-    //     updatePriceIfPresent(product, productRequest.price());
-    //     updateStockIfPresent(product, productRequest.stock());
+        updateNameIfPresent(product, productRequest.name());
+        updatePriceIfPresent(product, productRequest.price());
+        updateStockIfPresent(product, productRequest.stock());
 
-    //     return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getStock());
-    // }
+        productRepository.save(product);
 
-    // public void deleteProduct(Long id){
-    //     boolean removed = products.removeIf(item -> item.getId().equals(id));
+        return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getStock());
+    }
 
-    //     if (!removed) {
-    //         throw new NotFoundException("Data Product dengan ID " + id + " tidak ditemukan");
-    //     }
-    // }
+    public void deleteProduct(UUID id){
+
+        boolean exists = productRepository.existsById(id);
+
+        if (!exists) {
+            // 3. Jika tidak ada, lempar exception.
+            throw new NotFoundException("Produk dengan ID " + id + " gagal dihapus karena tidak ditemukan");
+        }
+
+        productRepository.deleteById(id);
+
+    }
 }
