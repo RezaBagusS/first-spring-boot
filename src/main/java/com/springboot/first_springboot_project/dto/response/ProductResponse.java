@@ -1,4 +1,7 @@
 package com.springboot.first_springboot_project.dto.response;
 
-public record ProductResponse(Long id, String name, double price, int stock ) {}
+import java.math.BigDecimal;
+import java.util.UUID;
+
+public record ProductResponse(UUID id, String name, BigDecimal price, Integer stock ) {}
 
