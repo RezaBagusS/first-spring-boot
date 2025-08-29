@@ -3,6 +3,8 @@ package com.springboot.first_springboot_project.controller;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.springboot.first_springboot_project.dto.request.ProductRequest;
 import com.springboot.first_springboot_project.dto.response.ApiResponse;
 import com.springboot.first_springboot_project.dto.response.ProductResponse;
+import com.springboot.first_springboot_project.entity.Product;
 import com.springboot.first_springboot_project.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -31,9 +34,16 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping
+    // Metode ini HANYA akan aktif jika TIDAK ADA parameter "page" di URL
+    @GetMapping(params = "!page")
     public ResponseEntity<ApiResponse<List<ProductResponse>>> getAllProducts(){
         return ResponseEntity.ok(new ApiResponse<>("success", "Daftar Product Ditemukan", productService.getAllProducts()));
+    }
+    
+    // Metode ini HANYA akan aktif jika TIDAK ADA parameter "page" di URL
+    @GetMapping(params = "page")
+    public ResponseEntity<ApiResponse<Page<Product>>> getAllProducts(Pageable pageable){
+        return ResponseEntity.ok(new ApiResponse<>("success", "Daftar Product Ditemukan", productService.getAllProducts(pageable)));
     }
 
     @GetMapping("/{id}")

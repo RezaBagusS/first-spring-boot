@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +61,10 @@ public class ProductService {
                 .map(product -> new ProductResponse(product.getId(), product.getName(), product.getPrice(),
                         product.getStock()))
                 .toList();
+    }
+
+    public Page<Product> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
     public ProductResponse getProductById(UUID id) {
